@@ -8,7 +8,7 @@ extern crate getopts;
 //TODO: remove getopt?
 fn main () {
 	//use getopts;
-	use std::{env, path};
+	use std::{env, path, process};
 
 	let args: Vec<String> = std::env::args().skip(1).collect();
 
@@ -31,7 +31,6 @@ fn main () {
 	} else {//no option or -L
 		match env::var("PWD") {
 			Ok(val) => {
-
 				//PWD value validation
 				let env_path = path::Path::new(&val);
 				match env::set_current_dir(&env_path) {
@@ -50,11 +49,14 @@ fn main () {
 							println!("{}", cwd.display());//getcwd and $PWD don't match
 						}
 					},
-					Err(err) => println!("{}", cwd.display())//couldn't change directory to $PWD
+					Err(_) => println!("{}", cwd.display())//couldn't change directory to $PWD
 				}
 
 			},
-			Err(err) => println!("{}", err)//$PWD has no value
+			Err(err) => {
+				eprintln!("{}", err);//$PWD has no value
+				process::exit(1);
+			},
 		}
 	}
 }
